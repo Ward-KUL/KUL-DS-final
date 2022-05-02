@@ -97,7 +97,7 @@ module VGA_pattern #(
 	           oBlueCurr <= 0;
 	           oGreenCurr <= 0;
 	       end
-	   else if(((iCountH >= iShapeH) && (iCountV >= iShapeV)) && (iCountH <= (iShapeH + iShapeSize)) && (iCountV <= (iShapeV + iShapeSize))) //blok
+	   else if(((iCountH >= iPosCurrH) && (iCountV >= iPosCurrV)) && (iCountH <= (iPosCurrH + initSize)) && (iCountV <= (iPosCurrV + initSize))) //blok
 	       begin
 	           oRedCurr <= 15;
 	           oBlueCurr <= 0;
