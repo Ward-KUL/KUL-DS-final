@@ -37,6 +37,7 @@ module VGA_pattern #(
 	input	wire [9:0]	iCountH, iCountV,
 	input	wire		iHS, iVS,
 	input  wire   [9:0] iShapeH,iShapeV,iShapeSize,
+	//input wire iUp,iDown,iRight,iLeft,
 	output 	wire		oHS_p, oVS_p,
 	// 12 bits RGB
 	output	wire [3:0]	oRed, oGreen, oBlue
@@ -46,57 +47,18 @@ module VGA_pattern #(
 	
 	always@(*)
 	begin
+	   oRedCurr <= 0;
+	   oBlueCurr <= 0;
+	   oGreenCurr <= 0;
 	   if(iCountH >= WIDTH || iCountV >= HEIGTH)
 	       begin
 	           oRedCurr <= 0;
 	           oBlueCurr <= 0;
 	           oGreenCurr <= 0;
 	       end
-	   else if(iCountH < (WIDTH/8)) //WIT
+	   else if(((iCountH >= iShapeH) && (iCountV >= iShapeV)) && (iCountH <= (iShapeH + iShapeSize)) && (iCountV <= (iShapeV + iShapeSize))) //blok
 	       begin
 	           oRedCurr <= 15;
-	           oBlueCurr <= 15;
-	           oGreenCurr <= 15;
-	       end
-	   else if(iCountH < (WIDTH/8)*2)//GEEL
-	       begin
-	           oRedCurr <= 15;
-	           oBlueCurr <= 0;
-	           oGreenCurr <= 15;
-	       end
-	   else if(iCountH < (WIDTH/8)*3)//CYAAN
-	       begin
-	           oRedCurr <= 0;
-	           oBlueCurr <= 15;
-	           oGreenCurr <= 15;
-	       end
-	   else if(iCountH < (WIDTH/8)*4)//GROEN
-	       begin
-	           oRedCurr <= 0;
-	           oBlueCurr <= 0;
-	           oGreenCurr <= 15;
-	       end
-	   else if(iCountH < (WIDTH/8)*5)//ROZE
-	       begin
-	           oRedCurr <= 15;
-	           oBlueCurr <= 15;
-	           oGreenCurr <= 0;
-	       end
-	   else if(iCountH < (WIDTH/8)*6)//ROOD
-	       begin
-	           oRedCurr <= 15;
-	           oBlueCurr <= 0;
-	           oGreenCurr <= 0;
-	       end
-	   else if(iCountH < (WIDTH/8)*7)//BLAUW
-	       begin
-	           oRedCurr <= 0;
-	           oBlueCurr <= 15;
-	           oGreenCurr <= 0;
-	       end
-	   else if(iCountH < (WIDTH))//ZWART
-	       begin
-	           oRedCurr <= 0;
 	           oBlueCurr <= 0;
 	           oGreenCurr <= 0;
 	       end
