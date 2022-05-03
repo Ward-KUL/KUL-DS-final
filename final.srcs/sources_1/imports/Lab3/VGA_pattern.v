@@ -33,9 +33,9 @@ module VGA_pattern #(
 	parameter V_BP		= 33,
 	
 	parameter increment = 20,
-	parameter initH = 290,
-	parameter initV = 210,
-	parameter initSize = 60
+	parameter initSize = 60,
+	parameter initH = WIDTH/2 - initSize/2,
+	parameter initV = HEIGTH - initSize/2
 	)
 	(
 	input	wire		iClk, iRst,
@@ -51,7 +51,7 @@ module VGA_pattern #(
 	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;
 	reg [9:0] iPosCurrH, iPosCurrV;
 	
-	always@(posedge iClk)
+	always@(posedge iVS)
 	begin
 	//eerst volgende positie van de blok bepalen
 	if(iRst == 1)
