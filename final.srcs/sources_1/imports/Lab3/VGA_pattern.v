@@ -32,10 +32,10 @@ module VGA_pattern #(
 	parameter V_PW		= 2,
 	parameter V_BP		= 33,
 	
-	parameter increment = 20,
+	parameter increment = 1,
 	parameter initSize = 60,
-	parameter initH = WIDTH/2 - initSize/2,
-	parameter initV = HEIGTH - initSize/2
+	parameter initH = 0,
+	parameter initV = 0
 	)
 	(
 	input	wire		iClk, iRst,
@@ -48,56 +48,21 @@ module VGA_pattern #(
 	output	wire [3:0]	oRed, oGreen, oBlue
 	);
 	
-	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;
-	reg [9:0] iPosCurrH, iPosCurrV;
-	
-	always@(posedge iVS)
-	begin
-	//eerst volgende positie van de blok bepalen
-	if(iRst == 1)
-	   begin 
-	       iPosCurrH <= initH;
-	       iPosCurrV <= initV;
-	   end
-	if(iUp == 1)
-	   begin
-	       iPosCurrV <= iPosCurrV - increment;
-	       if(iPosCurrV < 0)
-	           iPosCurrV <= 0;
-	   end
-	if(iDown == 1)
-	   begin
-	   iPosCurrV <= iPosCurrV + increment;
-	   if(iPosCurrV > (HEIGTH-initSize))
-	       iPosCurrV <= (HEIGTH - initSize);
-	   end
-	if(iLeft == 1)
-	   begin
-	   iPosCurrH <= iPosCurrH - increment;
-	   if(iPosCurrH < 0)
-	       iPosCurrH <= 0;
-	   end
-	if(iRight == 1)
-	   begin
-	   iPosCurrH <= iPosCurrH + increment;
-	   if(iPosCurrH > (WIDTH - initSize))
-	       iPosCurrH <= WIDTH - initSize;
-	   end   
-	end
+	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;	
 	always@(*)
 	begin
 	
 	//in kleuren
-	   oRedCurr <= 0;
-	   oBlueCurr <= 0;
-	   oGreenCurr <= 0;
+	   oRedCurr <= 15;
+	   oBlueCurr <= 15;
+	   oGreenCurr <= 15;
 	   if(iCountH >= WIDTH || iCountV >= HEIGTH)
 	       begin
 	           oRedCurr <= 0;
 	           oBlueCurr <= 0;
 	           oGreenCurr <= 0;
 	       end
-	   else if(((iCountH >= iPosCurrH) && (iCountV >= iPosCurrV)) && (iCountH <= (iPosCurrH + initSize)) && (iCountV <= (iPosCurrV + initSize))) //blok
+	   else if(((iCountH >= iShapeH) && (iCountV >= iShapeV)) && (iCountH <= (iShapeH + iShapeSize)) && (iCountV <= (iShapeV + iShapeSize))) //blok
 	       begin
 	           oRedCurr <= 15;
 	           oBlueCurr <= 0;

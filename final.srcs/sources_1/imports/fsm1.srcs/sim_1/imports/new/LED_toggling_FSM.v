@@ -1,12 +1,18 @@
 `timescale 1ns / 1ps
 
 module LED_toggling_FSM #(
-    parameter CLK_FREQ = 25_000_000
+    parameter CLK_FREQ = 25_000_000,
+    parameter WIDTH		= 640,
+    parameter HEIGTH	= 480,
+    parameter initSize = 60,
+	parameter initH = 290,
+	parameter initV = 210
     )
     
     (
   input   wire  iClk, iRst, iPushUp, iPushDown, iPushLeft, iPushRight,
-  output  wire  oLEDUp,oLEDDown,oLEDRight,oLEDLeft
+  output  wire  oLEDUp,oLEDDown,oLEDRight,oLEDLeft,
+  output wire [9:0] oShapeX,oShapeY,oShapeSize
     );
     
   // 0. State definition
@@ -21,6 +27,7 @@ module LED_toggling_FSM #(
   localparam sNoRight = 4'b1100;
   
   reg[3:0] rFSM_current, wFSM_next;
+  reg [9:0] iPosCurrV,iPosCurrH,iShapeSize;
   reg toggleRst;
   wire toggleOut;
   toggle #(.CLK_FREQ(CLK_FREQ))
@@ -40,131 +47,160 @@ module LED_toggling_FSM #(
   //  - in function of inputs and rFSM_current
   always @(*)
   begin
-    case (rFSM_current)
-    
-      sIdle:    if(iPushLeft == 1)
-                    begin
-                    wFSM_next <= sLeft;
-                    toggleRst = 1;
-                    end
-                 else if(iPushRight == 1)
-                    begin
-                    wFSM_next <= sRight;
-                    toggleRst = 1;
-                    end
-                 else if(iPushDown == 1)
-                    begin
-                    wFSM_next <= sDown;
-                    toggleRst = 1;
-                    end
-                 else if(iPushUp == 1)
-                    begin
-                    wFSM_next <= sUp;
-                    toggleRst = 1;
-                    end
-                 else
-                    begin
-                    wFSM_next <= sIdle;
-                    toggleRst = 0;
-                    end
-      
-      (sLeft):
-                  if (iPushLeft == 0)
-                  begin
-                  wFSM_next <= sIdle;
-                  end
-                else
-                  begin
-                  toggleRst = 0;
-                  if(toggleOut == 1)
-                    wFSM_next <= sNoLeft;
-                  else 
-                    wFSM_next <= sLeft;
-                  end
-       (sNoLeft):
-                if (iPushLeft == 0)
-                  begin
-                  wFSM_next <= sIdle;
-                  end
-                else
-                  begin
-                  toggleRst = 0;
-                  if(toggleOut == 1)
-                    wFSM_next <= sNoLeft;
-                  else 
-                    wFSM_next <= sLeft;
-                  end
-                
-      (sRight):
-                if (iPushRight == 0)
-                  wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoRight;
-                    else
+    if(iRst == 1)
+        begin
+        iPosCurrH <= initH;
+	    iPosCurrV <= initV;
+	    end
+	else
+	   begin
+        case (rFSM_current)
+        
+          sIdle:    if(iPushLeft == 1)
+                        begin
+                        wFSM_next <= sLeft;
+                        toggleRst = 1;
+                        end
+                     else if(iPushRight == 1)
+                        begin
                         wFSM_next <= sRight;
-                    end
-       (sNoRight):
-                if (iPushRight == 0)
-                  wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoRight;
+                        toggleRst = 1;
+                        end
+                     else if(iPushDown == 1)
+                        begin
+                        wFSM_next <= sDown;
+                        toggleRst = 1;
+                        end
+                     else if(iPushUp == 1)
+                        begin
+                        wFSM_next <= sUp;
+                        toggleRst = 1;
+                        end
+                     else
+                        begin
+                        wFSM_next <= sIdle;
+                        toggleRst = 0;
+                        end
+          
+          (sLeft):
+                      if (iPushLeft == 0)
+                      begin
+                      wFSM_next <= sIdle;
+                      end
                     else
-                        wFSM_next <= sRight;
-                    end
-                
-       (sUp):
-            if(iPushUp == 0)
-                wFSM_next <= sIdle;
-            else
-                begin
-                toggleRst = 0;
-                if(toggleOut == 1)
-                    wFSM_next <= sNoUp;
-                else
-                    wFSM_next <= sUp;
-                end
-       (sNoUp):
-            if(iPushUp == 0)
-                wFSM_next <= sIdle;
-            else
-                begin
-                toggleRst = 0;
-                if(toggleOut == 1)
-                    wFSM_next <= sNoUp;
-                else
-                    wFSM_next <= sUp;
-                end
-       (sDown):
-                if(iPushDown == 0)
+                      begin
+                      toggleRst = 0;
+                      if(toggleOut == 1)
+                        wFSM_next <= sNoLeft;
+                      else 
+                        wFSM_next <= sLeft;
+                      end
+           (sNoLeft):
+                    if (iPushLeft == 0)
+                      begin
+                      wFSM_next <= sIdle;
+                      end
+                    else
+                      begin
+                      toggleRst = 0;
+                      if(toggleOut == 1)
+                        wFSM_next <= sNoLeft;
+                      else 
+                        begin
+                        wFSM_next <= sLeft;
+                        iPosCurrH <= iPosCurrH - 1;
+                        if(iPosCurrH < 0)
+                           iPosCurrH <= 0;
+                        end
+                      end
+                    
+          (sRight):
+                    if (iPushRight == 0)
+                      wFSM_next <= sIdle;
+                    else
+                        begin
+                        toggleRst = 0;
+                        if(toggleOut == 1)
+                            wFSM_next <= sNoRight;
+                        else
+                            wFSM_next <= sRight;
+                        end
+           (sNoRight):
+                    if (iPushRight == 0)
+                      wFSM_next <= sIdle;
+                    else
+                        begin
+                        toggleRst = 0;
+                        if(toggleOut == 1)
+                            wFSM_next <= sNoRight;
+                        else
+                            begin
+                            wFSM_next <= sRight;
+                            iPosCurrH <= iPosCurrH + 1;
+                            if(iPosCurrH > (WIDTH - iShapeSize))
+                                iPosCurrH <= WIDTH - iShapeSize;
+                            end
+                        end
+                    
+           (sUp):
+                if(iPushUp == 0)
                     wFSM_next <= sIdle;
                 else
                     begin
                     toggleRst = 0;
                     if(toggleOut == 1)
-                        wFSM_next <= sNoDown;
+                        wFSM_next <= sNoUp;
                     else
-                        wFSM_next <= sDown;
+                        wFSM_next <= sUp;
                     end
-        (sNoDown):
-                if(iPushDown == 0)
+           (sNoUp):
+                if(iPushUp == 0)
                     wFSM_next <= sIdle;
                 else
                     begin
                     toggleRst = 0;
                     if(toggleOut == 1)
-                        wFSM_next <= sNoDown;
+                        wFSM_next <= sNoUp;
                     else
-                        wFSM_next <= sDown;
+                        begin
+                        wFSM_next <= sUp;
+                        iPosCurrV <= iPosCurrV - 1;
+                        if(iPosCurrV < 0)
+                           iPosCurrV <= 0;
+                        end
                     end
-      
-      default:  wFSM_next <= sIdle;
-    endcase
+           (sDown):
+                    if(iPushDown == 0)
+                        wFSM_next <= sIdle;
+                    else
+                        begin
+                        toggleRst = 0;
+                        if(toggleOut == 1)
+                            wFSM_next <= sNoDown;
+                        else
+                            wFSM_next <= sDown;
+                        end
+            (sNoDown):
+                    if(iPushDown == 0)
+                        wFSM_next <= sIdle;
+                    else
+                        begin
+                        toggleRst = 0;
+                        if(toggleOut == 1)
+                            wFSM_next <= sNoDown;
+                        else
+                            begin
+                            wFSM_next <= sDown;
+                            iPosCurrV <= iPosCurrV + 1;
+                            if(iPosCurrV > (HEIGTH-iShapeSize))
+                               iPosCurrV <= (HEIGTH - iShapeSize);
+                            end
+                        end
+          
+
+          default:  wFSM_next <= sIdle;
+        endcase
+     end
   end
   
   // 3. Output logic
@@ -172,27 +208,33 @@ module LED_toggling_FSM #(
   
   // 3.1 Define the register
   reg ledD,ledU,ledL,ledR;
+  
   always @(*)
   begin
         ledD = 0;
         ledU = 0;
         ledL = 0;
         ledR = 0;
+        iShapeSize = initSize;
     if(rFSM_current == sLeft)
         begin
         ledL = 1;
+
         end
     else if(rFSM_current == sRight)
         begin
         ledR = 1;
+
         end
     else if(rFSM_current == sUp)
         begin
         ledU = 1;
+
         end
     else if(rFSM_current == sDown)
         begin
         ledD = 1;
+
         end
         
   end
@@ -202,6 +244,9 @@ module LED_toggling_FSM #(
   assign oLEDDown = ledD;
   assign oLEDRight = ledR;
   assign oLEDLeft = ledL;
+  assign oShapeX = iPosCurrH;
+  assign oShapeY = iPosCurrV;
+  assign oShapeSize = iShapeSize;
   
 endmodule
 
