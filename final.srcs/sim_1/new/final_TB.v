@@ -28,7 +28,7 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     wire    w_oHS,w_oVS;
     wire    p_oHS,p_oVS;
     wire[3:0] w_oRed,w_oBlue,w_oGreen;
-  localparam CLK = 2;
+  localparam CLK = 6;
   localparam WIDTH_inst = 15;
     localparam H_FP_inst = 2;
     localparam H_PW_inst = 1;
@@ -70,12 +70,12 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     rPushR = 0;
     rPushD  = 0;
     rPushU = 0;
-    #(2*T);         // wait
+    #(5*T);         // wait
     rRst = 0;       // de-assert reset
     #(5*T);         // wait
-    rPushL = 1;      // assert push
-    #(5*T);         // wait
-    rPushL = 0;      // de-assert push
+    rPushR = 1;      // assert push
+    #(20*T);         // wait
+    rPushR = 0;      // de-assert push
     #(5*T);         // wait
     rPushL = 1;      // assert push
     #(5*T);         // wait

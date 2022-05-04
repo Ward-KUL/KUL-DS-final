@@ -32,16 +32,15 @@ module VGA_pattern #(
 	parameter V_PW		= 2,
 	parameter V_BP		= 33,
 	
-	parameter increment = 20,
+	parameter increment = 1,
 	parameter initSize = 60,
-	parameter initH = WIDTH/2 - initSize/2,
-	parameter initV = HEIGTH - initSize/2
+	parameter initH = 290,
+	parameter initV = 210
 	)
 	(
 	input	wire		iClk, iRst,
 	input	wire [9:0]	iCountH, iCountV,
 	input	wire		iHS, iVS,
-	//input  wire   [9:0] iShapeH,iShapeV,iShapeSize,
 	input wire iUp,iDown,iRight,iLeft,
 	output 	wire		oHS_p, oVS_p,
 	// 12 bits RGB
@@ -51,7 +50,7 @@ module VGA_pattern #(
 	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;
 	reg [9:0] iPosCurrH, iPosCurrV;
 	
-	always@(posedge iVS)
+	always@(posedge iClk)
 	begin
 	//eerst volgende positie van de blok bepalen
 	if(iRst == 1)
@@ -89,7 +88,7 @@ module VGA_pattern #(
 	
 	//in kleuren
 	   oRedCurr <= 0;
-	   oBlueCurr <= 0;
+	   oBlueCurr <= 5;
 	   oGreenCurr <= 0;
 	   if(iCountH >= WIDTH || iCountV >= HEIGTH)
 	       begin

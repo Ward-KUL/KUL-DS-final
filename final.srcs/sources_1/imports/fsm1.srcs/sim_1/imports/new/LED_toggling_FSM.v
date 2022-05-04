@@ -15,10 +15,6 @@ module LED_toggling_FSM #(
   localparam sDown    = 4'b0010;
   localparam sLeft = 4'b0011;
   localparam sRight = 4'b0100;
-  localparam sNoUp    = 4'b1001;
-  localparam sNoDown    = 4'b1010;
-  localparam sNoLeft = 4'b1011;
-  localparam sNoRight = 4'b1100;
   
   reg[3:0] rFSM_current, wFSM_next;
   reg toggleRst;
@@ -69,99 +65,33 @@ module LED_toggling_FSM #(
                     end
       
       (sLeft):
+                  begin
+                  toggleRst = 0;  
                   if (iPushLeft == 0)
-                  begin
-                  wFSM_next <= sIdle;
-                  end
-                else
-                  begin
-                  toggleRst = 0;
-                  if(toggleOut == 1)
-                    wFSM_next <= sNoLeft;
-                  else 
-                    wFSM_next <= sLeft;
-                  end
-       (sNoLeft):
-                if (iPushLeft == 0)
-                  begin
-                  wFSM_next <= sIdle;
-                  end
-                else
-                  begin
-                  toggleRst = 0;
-                  if(toggleOut == 1)
-                    wFSM_next <= sNoLeft;
-                  else 
-                    wFSM_next <= sLeft;
+                      begin
+                      wFSM_next <= sIdle;
+                      end
                   end
                 
       (sRight):
+                begin
+                toggleRst = 0;
                 if (iPushRight == 0)
                   wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoRight;
-                    else
-                        wFSM_next <= sRight;
-                    end
-       (sNoRight):
-                if (iPushRight == 0)
-                  wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoRight;
-                    else
-                        wFSM_next <= sRight;
-                    end
+                end
                 
        (sUp):
+            begin
+            toggleRst = 0;
             if(iPushUp == 0)
                 wFSM_next <= sIdle;
-            else
-                begin
-                toggleRst = 0;
-                if(toggleOut == 1)
-                    wFSM_next <= sNoUp;
-                else
-                    wFSM_next <= sUp;
-                end
-       (sNoUp):
-            if(iPushUp == 0)
-                wFSM_next <= sIdle;
-            else
-                begin
-                toggleRst = 0;
-                if(toggleOut == 1)
-                    wFSM_next <= sNoUp;
-                else
-                    wFSM_next <= sUp;
-                end
+            end
        (sDown):
+                begin
+                toggleRst = 0;
                 if(iPushDown == 0)
                     wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoDown;
-                    else
-                        wFSM_next <= sDown;
-                    end
-        (sNoDown):
-                if(iPushDown == 0)
-                    wFSM_next <= sIdle;
-                else
-                    begin
-                    toggleRst = 0;
-                    if(toggleOut == 1)
-                        wFSM_next <= sNoDown;
-                    else
-                        wFSM_next <= sDown;
-                    end
+                end
       
       default:  wFSM_next <= sIdle;
     endcase
@@ -180,19 +110,19 @@ module LED_toggling_FSM #(
         ledR = 0;
     if(rFSM_current == sLeft)
         begin
-        ledL = 1;
+        ledL = toggleOut;
         end
     else if(rFSM_current == sRight)
         begin
-        ledR = 1;
+        ledR = toggleOut;
         end
     else if(rFSM_current == sUp)
         begin
-        ledU = 1;
+        ledU = toggleOut;
         end
     else if(rFSM_current == sDown)
         begin
-        ledD = 1;
+        ledD = toggleOut;
         end
         
   end

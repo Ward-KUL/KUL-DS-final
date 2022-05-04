@@ -28,19 +28,28 @@ module toggle#(
     output wire oToggle
     );
     wire w1;
-    
+    wire timerRst;
+    reg nxtTimerRst;
     reg rToggle_Curr;
-    wire    wToggle_Next;
     
     timer_1s    #(.CLK_FREQ(CLK_FREQ))
     timer_1s_inst     (.iClk(iClk),.iRst(iRst),.oQ(w1));
-    always @(posedge iClk)
-        if(iRst == 1)
-            rToggle_Curr <= 0;
-        else if(w1==1)
-            rToggle_Curr <= wToggle_Next;
-            
-    assign wToggle_Next = ~rToggle_Curr;
     
+    always @(posedge iClk)
+        begin
+        if(iRst == 1)
+            begin
+            rToggle_Curr <= 0;
+            end
+        else if(w1 == 1)
+            begin
+            rToggle_Curr <= 1;
+            end
+        else
+            begin
+            rToggle_Curr <= 0;
+            end
+        end      
+    assign timerRst = nxtTimerRst;
     assign oToggle = rToggle_Curr;
 endmodule
