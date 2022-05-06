@@ -6,27 +6,32 @@ module LED_toggling_FSM #(
     
     (
   input   wire  iClk, iRst, iPushUp, iPushDown, iPushLeft, iPushRight,
-  output  wire  oLEDUp,oLEDDown,oLEDRight,oLEDLeft
+  output  wire  oLEDUp,oLEDDown,oLEDRight,oLEDLeft,
+  output wire [9:0] oShapeX,oShapeY,oSize
     );
     
   // 0. State definition
-  localparam sIdle    = 4'b0000;
-  localparam sUp    = 4'b0001;
-  localparam sDown    = 4'b0010;
-  localparam sLeft = 4'b0011;
-  localparam sRight = 4'b0100;
+  localparam sIdle    = 3'b000;
+  localparam sUp    = 3'b001;
+  localparam sDown    = 3'b010;
+  localparam sLeft = 3'b011;
+  localparam sRight = 3'b100;
   
-  reg[3:0] rFSM_current, wFSM_next;
-  reg toggleRst;
+  reg[2:0] rFSM_current, wFSM_next;
+  reg [9:0] oShapeCurrX, oShapeCurrY, oSizeCurr;
   wire toggleOut;
   toggle #(.CLK_FREQ(CLK_FREQ))
-  toggle_instance(.iClk(iClk),.iRst(toggleRst),.oToggle(toggleOut));
+  toggle_instance(.iClk(iClk),.iRst(iRst),.oToggle(toggleOut));
   // 1. State register
   //  - with synchronous reset
   always @(posedge iClk)
   begin
     if (iRst == 1)
+        begin
       rFSM_current <= sIdle;
+      oShapeCurrX <= 0;
+      oShapeCurrY <= 0;
+      end
     else
       rFSM_current <= wFSM_next;
   end
@@ -41,32 +46,26 @@ module LED_toggling_FSM #(
       sIdle:    if(iPushLeft == 1)
                     begin
                     wFSM_next <= sLeft;
-                    toggleRst = 1;
                     end
                  else if(iPushRight == 1)
                     begin
                     wFSM_next <= sRight;
-                    toggleRst = 1;
                     end
                  else if(iPushDown == 1)
                     begin
                     wFSM_next <= sDown;
-                    toggleRst = 1;
                     end
                  else if(iPushUp == 1)
                     begin
                     wFSM_next <= sUp;
-                    toggleRst = 1;
                     end
                  else
                     begin
                     wFSM_next <= sIdle;
-                    toggleRst = 0;
                     end
       
       (sLeft):
                   begin
-                  toggleRst = 0;  
                   if (iPushLeft == 0)
                       begin
                       wFSM_next <= sIdle;
@@ -75,20 +74,17 @@ module LED_toggling_FSM #(
                 
       (sRight):
                 begin
-                toggleRst = 0;
                 if (iPushRight == 0)
                   wFSM_next <= sIdle;
                 end
                 
        (sUp):
             begin
-            toggleRst = 0;
             if(iPushUp == 0)
                 wFSM_next <= sIdle;
             end
        (sDown):
                 begin
-                toggleRst = 0;
                 if(iPushDown == 0)
                     wFSM_next <= sIdle;
                 end
@@ -102,7 +98,7 @@ module LED_toggling_FSM #(
   
   // 3.1 Define the register
   reg ledD,ledU,ledL,ledR;
-  always @(*)
+  always @(posedge toggleOut)
   begin
         ledD = 0;
         ledU = 0;
@@ -110,19 +106,27 @@ module LED_toggling_FSM #(
         ledR = 0;
     if(rFSM_current == sLeft)
         begin
-        ledL = toggleOut;
+        if(oShapeCurrX>0)
+            oShapeCurrX <= oShapeCurrX - 1;
+        ledL = 1;
         end
     else if(rFSM_current == sRight)
         begin
-        ledR = toggleOut;
+        ledR = 1;
+        if(oShapeCurrX<420)
+            oShapeCurrX <= oShapeCurrX + 1;
         end
     else if(rFSM_current == sUp)
         begin
-        ledU = toggleOut;
+        ledU = 1;
+        if(oShapeCurrY > 420)
+            oShapeCurrY <= 420;
         end
     else if(rFSM_current == sDown)
         begin
-        ledD = toggleOut;
+        ledD = 1;
+        if(oShapeCurrY < 0)
+            oShapeCurrY <= 0;
         end
         
   end
@@ -132,6 +136,9 @@ module LED_toggling_FSM #(
   assign oLEDDown = ledD;
   assign oLEDRight = ledR;
   assign oLEDLeft = ledL;
+  assign oShapeX = oShapeCurrX;
+  assign oShapeY = oShapeCurrY;
+  assign oSize = oSizeCurr;
   
 endmodule
 
