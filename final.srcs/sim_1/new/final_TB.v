@@ -73,13 +73,13 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     #(5*T);         // wait
     rRst = 0;       // de-assert reset
     #(5*T);         // wait
-    rPushR = 1;      // assert push
+    rPushU = 1;      // assert push
     #(20*T);         // wait
-    rPushR = 0;      // de-assert push
+    rPushU = 0;      // de-assert push
     #(5*T);         // wait
-    rPushL = 1;      // assert push
+    rPushD = 1;      // assert push
     #(5*T);         // wait
-    rPushL = 0;      // de-assert push
+    rPushD = 0;      // de-assert push
     #(5*T);         // wait
     
     // let the counter run for at least 1 frame

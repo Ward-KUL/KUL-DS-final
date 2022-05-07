@@ -163,20 +163,20 @@ module LED_toggling_FSM #(
     else if(rFSM_current == sRight)
         begin
         ledR = 1;
-        if(oShapeCurrX<endH)
+        if(oShapeCurrX<WIDTH - oSize)
             oShapeCurrX <= oShapeCurrX + 1;
         end
     else if(rFSM_current == sUp)
         begin
         ledU = 1;
-        if(oShapeCurrY > endV)
-            oShapeCurrY <= 420;
+        if(oShapeCurrY > 0 )
+            oShapeCurrY <= oShapeCurrY - 1;
         end
     else if(rFSM_current == sDown)
         begin
         ledD = 1;
-        if(oShapeCurrY < 0)
-            oShapeCurrY <= 0;
+        if(oShapeCurrY < HEIGTH-oSize)
+            oShapeCurrY <= oShapeCurrY + 1;
         end
         
   end
