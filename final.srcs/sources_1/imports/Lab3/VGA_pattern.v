@@ -38,7 +38,7 @@ module VGA_pattern #(
 	parameter initV = 210
 	)
 	(
-	input	wire		iClk, iRst,
+	input	wire		iClk, iRst,iColor,
 	input	wire [9:0]	iCountH, iCountV,
 	input	wire		iHS, iVS,
 	input wire iUp,iDown,iRight,iLeft,
@@ -49,15 +49,57 @@ module VGA_pattern #(
 	);
 	
 	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;
+	reg [3:0] redBack,blueBack,greenBack;
+	reg [2:0] colorSelect;
+	wire colorToggle; 
 	
+	timer#(.CLK_FREQ(100000))
+    timer_ins(.iClk(iClk),.iRst(iRst),.oQ(colorToggle));
+	
+	always@(posedge colorToggle)
+	begin
+	   if(iColor == 0)
+	       begin
+	       redBack <= 0;
+	       blueBack <= 5;
+	       greenBack <= 0;
+	       colorSelect <= 0;
+	       end
+	   else
+	       begin
+	       if(colorSelect == 0 || colorSelect == 2 || colorSelect == 4)
+	          begin
+               if(redBack < 15)
+                   redBack <= redBack + 1;
+               else
+                    redBack <= 0;
+              end
+           else if(colorSelect == 1 || colorSelect == 5)
+                begin
+                if(greenBack < 15)
+                    greenBack <= greenBack +1;
+                else
+                    greenBack <= 0;
+                end
+           else if(colorSelect == 3)
+            begin
+                if(redBack <15)
+                    blueBack <= blueBack + 1;
+                else
+                    blueBack <= 0;
+            end
+	       colorSelect <= colorSelect + 1;
+	   end
+	       
+	end
 	
 	always@(*)
 	begin
-	
+
 	//in kleuren
-	   oRedCurr <= 0;
-	   oBlueCurr <= 5;
-	   oGreenCurr <= 0;
+	   oRedCurr <= redBack;
+	   oBlueCurr <= blueBack;
+	   oGreenCurr <= greenBack;
 	   if(iCountH >= WIDTH || iCountV >= HEIGTH)
 	       begin
 	           oRedCurr <= 0;
