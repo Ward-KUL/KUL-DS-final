@@ -27,13 +27,12 @@ module timer_1s#(
     output wire oQ
     );
 //size of the instantiated counter
-localparam CLK = 2000000; //the bigger the slowest(modifies low part of the puls
-localparam N = $clog2(CLK-1);
+localparam N = $clog2(CLK_FREQ-1);
 
 //variable (N bits) to connect to the ouput of the counter
 wire[N-1:0] wCntOut;
 counter#(.LIM(CLK_FREQ))
 counter_inst(.iClk(iClk),.iEnable(1),.iRst(iRst),.oQ(wCntOut));
 
-assign oQ = (wCntOut == CLK-1)?1:0;
+assign oQ = (wCntOut == CLK_FREQ-1)?1:0;
 endmodule

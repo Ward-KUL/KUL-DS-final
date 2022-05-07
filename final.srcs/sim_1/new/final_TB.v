@@ -47,7 +47,7 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     VGA_timings_inst(.iClk(rClk),.iRst(rRst),.oCountH(w_oCountH),.oCountV(w_oCountV),.oHS(w_oHS),.oVS(w_oVS));
     VGA_pattern#(.WIDTH(WIDTH_inst),.H_FP(H_FP_inst),.H_PW(H_PW_inst),.H_BP(H_BP_inst),
         .HEIGHT(HEIGHT_inst),.V_FP(V_FP_inst),.V_BP(V_BP_inst))
-    VGA_pattern_inst(.iClk(rClk),.iRst(rRst),.iCountH(w_oCountH),.iCountV(w_oCountV),.iHS(w_oHS),.iVS(w_oVS),.oHS_p(p_oHS),.oVS_p(p_oVS),.oRed(w_oRed),.oBlue(w_oBlue),.oGreen(w_oGreen),.iUp(wLEDU),.iDown(wLEDD),.iLeft(wLEDL),.iRight(wLEDR));
+    VGA_pattern_inst(.iClk(rClk),.iRst(rRst),.iCountH(w_oCountH),.iCountV(w_oCountV),.iHS(w_oHS),.iVS(w_oVS),.oHS_p(p_oHS),.oVS_p(p_oVS),.oRed(w_oRed),.oBlue(w_oBlue),.oGreen(w_oGreen),.iUp(wLEDU),.iDown(wLEDD),.iLeft(wLEDL),.iRight(wLEDR),.iShapeX(iShapeX),.iShapeY(iShapeY));
   
   
   // definition of clock period

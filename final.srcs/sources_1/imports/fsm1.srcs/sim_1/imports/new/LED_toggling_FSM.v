@@ -16,21 +16,20 @@ module LED_toggling_FSM #(
   localparam sDown    = 3'b010;
   localparam sLeft = 3'b011;
   localparam sRight = 3'b100;
+  localparam sReset = 3'b111;
   
   reg[2:0] rFSM_current, wFSM_next;
   reg [9:0] oShapeCurrX, oShapeCurrY, oSizeCurr;
   wire toggleOut;
-  toggle #(.CLK_FREQ(CLK_FREQ))
-  toggle_instance(.iClk(iClk),.iRst(iRst),.oToggle(toggleOut));
+  timer_1s#(.CLK_FREQ(100000))
+  timer_inst(.iClk(iClk),.iRst(iRst),.oQ(toggleOut));
   // 1. State register
   //  - with synchronous reset
   always @(posedge iClk)
   begin
     if (iRst == 1)
         begin
-      rFSM_current <= sIdle;
-      oShapeCurrX <= 0;
-      oShapeCurrY <= 0;
+      rFSM_current <= sReset;
       end
     else
       rFSM_current <= wFSM_next;
@@ -63,6 +62,27 @@ module LED_toggling_FSM #(
                     begin
                     wFSM_next <= sIdle;
                     end
+      (sReset):
+                begin
+                if(iPushLeft == 1)
+                    begin
+                    wFSM_next <= sLeft;
+                    end
+                 else if(iPushRight == 1)
+                    begin
+                    wFSM_next <= sRight;
+                    end
+                 else if(iPushDown == 1)
+                    begin
+                    wFSM_next <= sDown;
+                    end
+                 else if(iPushUp == 1)
+                    begin
+                    wFSM_next <= sUp;
+                    end
+                 else 
+                    wFSM_next <= sReset;
+                end
       
       (sLeft):
                   begin
@@ -70,26 +90,34 @@ module LED_toggling_FSM #(
                       begin
                       wFSM_next <= sIdle;
                       end
+                  else
+                    wFSM_next <= sLeft;
                   end
                 
       (sRight):
                 begin
                 if (iPushRight == 0)
                   wFSM_next <= sIdle;
+                else
+                    wFSM_next <= sRight;
                 end
                 
        (sUp):
             begin
             if(iPushUp == 0)
                 wFSM_next <= sIdle;
+            else
+                wFSM_next <= sUp;
             end
        (sDown):
                 begin
                 if(iPushDown == 0)
                     wFSM_next <= sIdle;
+                else
+                    wFSM_next <= sDown;
                 end
       
-      default:  wFSM_next <= sIdle;
+      default:  wFSM_next <= sReset;
     endcase
   end
   
@@ -104,7 +132,12 @@ module LED_toggling_FSM #(
         ledU = 0;
         ledL = 0;
         ledR = 0;
-    if(rFSM_current == sLeft)
+    if(rFSM_current == sReset)
+        begin
+        oShapeCurrX <= 290;
+        oShapeCurrY <= 210;
+        end
+    else if(rFSM_current == sLeft)
         begin
         if(oShapeCurrX>0)
             oShapeCurrX <= oShapeCurrX - 1;
