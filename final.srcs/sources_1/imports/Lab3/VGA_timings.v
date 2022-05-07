@@ -41,7 +41,8 @@ module VGA_timings #(
     input   wire iClk, iRst,
     output  wire oHS, oVS,
     
-    output  wire [N-1:0] oCountH, oCountV
+    output  wire [N-1:0] oCountH, oCountV,
+    output wire ivSync
     );
     
     wire [N-1:0] oCountHCurr;
@@ -56,6 +57,7 @@ module VGA_timings #(
 
     assign oHS = ((oCountHCurr <= WIDTH + H_FP)||(oCountHCurr >= WIDTH + H_FP+H_PW))?1:0;
     assign oVS = ((oCountVCurr2 <= HEIGHT+V_FP)||(oCountVCurr2 >= HEIGHT+V_FP+V_PW))?1:0;
+    assign ivSync = ((oCountVCurr2 == (V_total -1)))?1:0;
     assign oCountH = oCountHCurr;
     assign oCountV = oCountVCurr2;     
           
