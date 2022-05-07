@@ -1,7 +1,21 @@
 `timescale 1ns / 1ps
 
 module LED_toggling_FSM #(
-    parameter CLK_FREQ = 25_000_000
+    parameter CLK_FREQ = 25_000_000,
+    parameter WIDTH		= 640,
+	parameter H_FP		= 16,
+	parameter H_PW		= 96,
+	parameter H_BP		= 48,
+	// V total = 480 + 10 + 2 + 33 = 525
+	parameter HEIGTH	= 480,
+	parameter V_FP		= 10,
+	parameter V_PW		= 2,
+	parameter V_BP		= 33,
+	
+	parameter increment = 1,
+	parameter initSize = 60,
+	parameter initH = 290,
+	parameter initV = 210
     )
     
     (
@@ -17,6 +31,9 @@ module LED_toggling_FSM #(
   localparam sLeft = 3'b011;
   localparam sRight = 3'b100;
   localparam sReset = 3'b111;
+  
+  localparam endH = WIDTH - initSize;
+  localparam endV = HEIGTH - initSize;
   
   reg[2:0] rFSM_current, wFSM_next;
   reg [9:0] oShapeCurrX, oShapeCurrY, oSizeCurr;
@@ -146,13 +163,13 @@ module LED_toggling_FSM #(
     else if(rFSM_current == sRight)
         begin
         ledR = 1;
-        if(oShapeCurrX<420)
+        if(oShapeCurrX<endH)
             oShapeCurrX <= oShapeCurrX + 1;
         end
     else if(rFSM_current == sUp)
         begin
         ledU = 1;
-        if(oShapeCurrY > 420)
+        if(oShapeCurrY > endV)
             oShapeCurrY <= 420;
         end
     else if(rFSM_current == sDown)
