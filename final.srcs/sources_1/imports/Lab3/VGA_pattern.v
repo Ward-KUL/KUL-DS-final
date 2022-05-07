@@ -37,7 +37,7 @@ module VGA_pattern #(
 	parameter initH = 290,
 	parameter initV = 210,
 	
-	parameter colorTimer = 10,
+	parameter colorTimer = 3,
 	parameter Ncolor = $clog2(colorTimer -1)
 	)
 	(
@@ -55,11 +55,8 @@ module VGA_pattern #(
 	reg [3:0] redBack,blueBack,greenBack;
 	reg [2:0] colorSelect;
 	reg redUp,greenUp,blueUp;
-	wire colorToggle; 
 	wire colorSync;
 	wire [Ncolor:0] counterOut;
-	timer#(.CLK_FREQ(1000000))
-    timer_ins(.iClk(iClk),.iRst(iRst),.oQ(colorToggle));
     counter#(.LIM(10))
     counter_vga(.iClk(vSync),.iRst(iRst),.iEnable(1),.oQ(counterOut));
 	
@@ -133,7 +130,10 @@ module VGA_pattern #(
                         blueUp <= 1;
                     end
            end
-	       colorSelect <= colorSelect + 1;
+           if(colorSelect < 5)
+	           colorSelect <= colorSelect + 1;
+	       else
+	           colorSelect <= 0;
 	   end
 	       
 	end
