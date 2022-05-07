@@ -51,9 +51,10 @@ module VGA_pattern #(
 	reg [3:0] oRedCurr, oBlueCurr, oGreenCurr;
 	reg [3:0] redBack,blueBack,greenBack;
 	reg [2:0] colorSelect;
+	reg redUp,greenUp,blueUp;
 	wire colorToggle; 
 	
-	timer#(.CLK_FREQ(100000))
+	timer#(.CLK_FREQ(1000000))
     timer_ins(.iClk(iClk),.iRst(iRst),.oQ(colorToggle));
 	
 	always@(posedge colorToggle)
@@ -69,25 +70,63 @@ module VGA_pattern #(
 	       begin
 	       if(colorSelect == 0 || colorSelect == 2 || colorSelect == 4)
 	          begin
-               if(redBack < 15)
-                   redBack <= redBack + 1;
-               else
-                    redBack <= 0;
+	          if(redUp == 1)
+                  begin
+                   if(redBack < 15)
+                        begin
+                       redBack <= redBack + 1;
+                       end
+                   else
+                        begin
+                        redUp <= 0;
+                        redBack <= redBack -1;
+                        end
+                  end
+              else
+                begin
+                    if(redBack > 0)
+                        redBack <= redBack - 1;
+                    else 
+                        begin
+                        redBack <= redBack +1 ;
+                        redUp <= 1;
+                        end
+                end
               end
            else if(colorSelect == 1 || colorSelect == 5)
                 begin
-                if(greenBack < 15)
-                    greenBack <= greenBack +1;
-                else
-                    greenBack <= 0;
+                if(greenUp == 1)
+                    begin
+                    if(greenBack < 15)
+                        greenBack <= greenBack +1;
+                    else
+                        greenUp <= 0;
+                    end
+                else 
+                    begin
+                    if(greenBack > 0)
+                        greenBack <= greenBack -1;
+                    else 
+                        greenUp <= 1;
+                    end
                 end
            else if(colorSelect == 3)
-            begin
-                if(redBack <15)
-                    blueBack <= blueBack + 1;
+           begin
+                if(blueUp == 1)
+                begin
+                    if(blueBack <15)
+                        blueBack <= blueBack + 1;
+                    else
+                        blueUp <= 0;
+                end
                 else
-                    blueBack <= 0;
-            end
+                    begin
+                    if(blueBack > 0)
+                        blueBack <= blueBack -1;
+                    else
+                        blueUp <= 1;
+                    end
+           end
 	       colorSelect <= colorSelect + 1;
 	   end
 	       
