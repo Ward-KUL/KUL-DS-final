@@ -37,7 +37,7 @@ module VGA_pattern #(
 	parameter initH = 290,
 	parameter initV = 210,
 	
-	parameter colorTimer = 3,
+	parameter colorTimer = 5,
 	parameter Ncolor = $clog2(colorTimer -1)
 	)
 	(
