@@ -153,22 +153,29 @@ module LED_toggling_FSM #(
             begin
             oShapeCurrX <= 290;
             oShapeCurrY <= 210;
+            oSizeCurr <= 60;
             end
         else if(rFSM_current == sLeft)
             begin
             if(oShapeCurrX>0)
                 oShapeCurrX <= oShapeCurrX - 1;
             else if(iSpecialMode == 1)
-                oShapeCurrX <= WIDTH - initSize;
+                begin
+                oSizeCurr = oSizeCurr + 1;
+                oShapeCurrX <= WIDTH - oSizeCurr;
+                end
             ledL = 1;
             end
         else if(rFSM_current == sRight)
             begin
             ledR = 1;
-            if(oShapeCurrX<WIDTH - initSize)
+            if(oShapeCurrX<WIDTH - oSizeCurr)
                 oShapeCurrX <= oShapeCurrX + 1;
             else if(iSpecialMode == 1)
+                begin
                 oShapeCurrX <= 0;
+                oSizeCurr = oSizeCurr + 1;
+                end
             end
         else if(rFSM_current == sUp)
             begin
@@ -176,15 +183,21 @@ module LED_toggling_FSM #(
             if(oShapeCurrY > 0 )
                 oShapeCurrY <= oShapeCurrY - 1;
             else if(iSpecialMode == 1)
-                oShapeCurrX <= HEIGTH - initSize;
+                begin
+                oShapeCurrY <= HEIGTH - oSizeCurr;
+                oSizeCurr = oSizeCurr + 1;
+                end
             end
         else if(rFSM_current == sDown)
             begin
             ledD = 1;
-            if(oShapeCurrY < HEIGTH-initSize)
+            if(oShapeCurrY < HEIGTH-oSizeCurr)
                 oShapeCurrY <= oShapeCurrY + 1;
             else if(iSpecialMode == 1)
-                oShapeCurrX <= 0;
+                begin
+                oShapeCurrY <= 0;
+                oSizeCurr = oSizeCurr + 1;
+                end
             end
         
   end
