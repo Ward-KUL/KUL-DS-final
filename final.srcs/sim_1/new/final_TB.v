@@ -22,7 +22,7 @@
 
 module final_TB;
 
-reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
+reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU,rColor;
   wire  wLEDR,wLEDU,wLEDD,wLEDL;
   wire[9:0] w_oCountH,w_oCountV;
     wire    w_oHS,w_oVS;
@@ -41,13 +41,13 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     //localparam V_total_inst = HEIGHT_inst + V_FP_inst + V_PW_inst + V_BP_inst;
   
   LED_toggling_FSM  #(.CLK_FREQ(CLK))  LED_toggling_FSM_INST
-  ( .iClk(rClk), .iRst(rRst), .iPushLeft(rPushL),.iPushRight(rPushR),.iPushDown(rPushD),.iPushUp(rPushU), .oLEDUp(wLEDU),.oLEDDown(wLEDD),.oLEDLeft(wLEDL),.oLEDRight(wLEDR));
+  ( .iClk(rClk), .iRst(rRst), .iPushLeft(rPushL),.iPushRight(rPushR),.iPushDown(rPushD),.iPushUp(rPushU), .oLEDUp(wLEDU),.oLEDDown(wLEDD),.oLEDLeft(wLEDL),.oLEDRight(wLEDR),.iSpecialMode(rColor));
   VGA_timings#(.WIDTH(WIDTH_inst),.H_FP(H_FP_inst),.H_PW(H_PW_inst),.H_BP(H_BP_inst),
         .HEIGHT(HEIGHT_inst),.V_FP(V_FP_inst),.V_BP(V_BP_inst))
     VGA_timings_inst(.iClk(rClk),.iRst(rRst),.oCountH(w_oCountH),.oCountV(w_oCountV),.oHS(w_oHS),.oVS(w_oVS));
     VGA_pattern#(.WIDTH(WIDTH_inst),.H_FP(H_FP_inst),.H_PW(H_PW_inst),.H_BP(H_BP_inst),
         .HEIGHT(HEIGHT_inst),.V_FP(V_FP_inst),.V_BP(V_BP_inst))
-    VGA_pattern_inst(.iClk(rClk),.iRst(rRst),.iCountH(w_oCountH),.iCountV(w_oCountV),.iHS(w_oHS),.iVS(w_oVS),.oHS_p(p_oHS),.oVS_p(p_oVS),.oRed(w_oRed),.oBlue(w_oBlue),.oGreen(w_oGreen),.iUp(wLEDU),.iDown(wLEDD),.iLeft(wLEDL),.iRight(wLEDR),.iShapeX(iShapeX),.iShapeY(iShapeY));
+    VGA_pattern_inst(.iClk(rClk),.iRst(rRst),.iCountH(w_oCountH),.iCountV(w_oCountV),.iHS(w_oHS),.iVS(w_oVS),.oHS_p(p_oHS),.oVS_p(p_oVS),.oRed(w_oRed),.oBlue(w_oBlue),.oGreen(w_oGreen),.iUp(wLEDU),.iDown(wLEDD),.iLeft(wLEDL),.iRight(wLEDR),.iShapeX(iShapeX),.iShapeY(iShapeY),.iColor(rColor));
   
   
   // definition of clock period
@@ -70,6 +70,7 @@ reg   rClk, rRst, rPushL,rPushR,rPushD,rPushU;
     rPushR = 0;
     rPushD  = 0;
     rPushU = 0;
+    rColor = 0;
     #(5*T);         // wait
     rRst = 0;       // de-assert reset
     #(5*T);         // wait

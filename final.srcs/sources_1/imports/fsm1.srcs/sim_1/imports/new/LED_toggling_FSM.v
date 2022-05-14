@@ -19,7 +19,7 @@ module LED_toggling_FSM #(
     )
     
     (
-  input   wire  iClk, iRst, iPushUp, iPushDown, iPushLeft, iPushRight,
+  input   wire  iClk, iRst, iPushUp, iPushDown, iPushLeft, iPushRight,iSpecialMode,
   output  wire  oLEDUp,oLEDDown,oLEDRight,oLEDLeft,
   output wire [9:0] oShapeX,oShapeY,oSize
     );
@@ -48,7 +48,7 @@ module LED_toggling_FSM #(
         begin
       rFSM_current <= sReset;
       end
-    else
+    else if(iSpecialMode == 0)
       rFSM_current <= wFSM_next;
   end
   
@@ -149,35 +149,43 @@ module LED_toggling_FSM #(
         ledU = 0;
         ledL = 0;
         ledR = 0;
-    if(rFSM_current == sReset)
-        begin
-        oShapeCurrX <= 290;
-        oShapeCurrY <= 210;
-        end
-    else if(rFSM_current == sLeft)
-        begin
-        if(oShapeCurrX>0)
-            oShapeCurrX <= oShapeCurrX - 1;
-        ledL = 1;
-        end
-    else if(rFSM_current == sRight)
-        begin
-        ledR = 1;
-        if(oShapeCurrX<WIDTH - initSize)
-            oShapeCurrX <= oShapeCurrX + 1;
-        end
-    else if(rFSM_current == sUp)
-        begin
-        ledU = 1;
-        if(oShapeCurrY > 0 )
-            oShapeCurrY <= oShapeCurrY - 1;
-        end
-    else if(rFSM_current == sDown)
-        begin
-        ledD = 1;
-        if(oShapeCurrY < HEIGTH-initSize)
-            oShapeCurrY <= oShapeCurrY + 1;
-        end
+        if(rFSM_current == sReset)
+            begin
+            oShapeCurrX <= 290;
+            oShapeCurrY <= 210;
+            end
+        else if(rFSM_current == sLeft)
+            begin
+            if(oShapeCurrX>0)
+                oShapeCurrX <= oShapeCurrX - 1;
+            else if(iSpecialMode == 1)
+                oShapeCurrX <= WIDTH - initSize;
+            ledL = 1;
+            end
+        else if(rFSM_current == sRight)
+            begin
+            ledR = 1;
+            if(oShapeCurrX<WIDTH - initSize)
+                oShapeCurrX <= oShapeCurrX + 1;
+            else if(iSpecialMode == 1)
+                oShapeCurrX <= 0;
+            end
+        else if(rFSM_current == sUp)
+            begin
+            ledU = 1;
+            if(oShapeCurrY > 0 )
+                oShapeCurrY <= oShapeCurrY - 1;
+            else if(iSpecialMode == 1)
+                oShapeCurrX <= HEIGTH - initSize;
+            end
+        else if(rFSM_current == sDown)
+            begin
+            ledD = 1;
+            if(oShapeCurrY < HEIGTH-initSize)
+                oShapeCurrY <= oShapeCurrY + 1;
+            else if(iSpecialMode == 1)
+                oShapeCurrX <= 0;
+            end
         
   end
   
